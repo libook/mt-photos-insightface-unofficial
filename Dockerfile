@@ -16,4 +16,4 @@ EXPOSE 8066
 
 VOLUME ["/root/.insightface/models"]
 
-CMD [ "python3", "server.py" ]
+CMD [ "python3" "server.py" ]

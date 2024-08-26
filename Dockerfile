@@ -1,4 +1,4 @@
-FROM python:3.8.10-buster
+FROM nvidia/cuda:12.3.2-cudnn9-runtime-ubuntu22.04
 USER root
 
 WORKDIR /app

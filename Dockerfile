@@ -5,6 +5,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # 安装依赖包
+RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install --no-cache-dir -r requirements.txt --index-url=https://pypi.tuna.tsinghua.edu.cn/simple/
 
 COPY server.py .

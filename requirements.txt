@@ -3,3 +3,4 @@ python-dotenv
 uvicorn
 insightface
 onnxruntime
+python-multipart

@@ -2,5 +2,5 @@ fastapi
 python-dotenv
 uvicorn
 insightface
-onnxruntime
+onnxruntime_gpu
 python-multipart

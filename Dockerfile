@@ -5,6 +5,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # 安装依赖包
+RUN python3 -m ensurepip
 RUN pip3 install --no-cache-dir -r requirements.txt --index-url=https://pypi.tuna.tsinghua.edu.cn/simple/
 
 COPY server.py .

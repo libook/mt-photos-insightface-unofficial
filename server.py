@@ -152,6 +152,7 @@ async def process_image(file: UploadFile = File(...), api_key: str = Depends(ver
         if 'set enforce_detection' in str(e):
             return {'result': []}
         print(e)
+        exit(1)
         return {'result': [], 'msg': str(e)}
 
 def _represent(img):

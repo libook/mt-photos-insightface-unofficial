@@ -13,47 +13,54 @@ from insightface.utils import storage
 from insightface.app import FaceAnalysis
 import logging
 
+# 初始化日志配置
 logging.basicConfig(level=logging.INFO)
 
-
+# 判断操作系统是否为Linux
 on_linux = sys.platform.startswith('linux')
 
+# 加载环境变量
 load_dotenv()
+# 初始化FastAPI应用
 app = FastAPI()
+# 从环境变量中获取API认证密钥，默认值为mt_photos_ai_extra
 api_auth_key = os.getenv("API_AUTH_KEY", "mt_photos_ai_extra")
+# 从环境变量中获取HTTP端口号，默认值为8066
 http_port = int(os.getenv("HTTP_PORT", "8066"))
 
-
+# 定义一个变量来存储非活跃任务
 inactive_task = None
 
-
+# 从环境变量中获取人脸检测后端，默认值为insightface
 detector_backend = os.getenv("DETECTOR_BACKEND", "insightface")
 
-
-# 人脸检测及特征提取模型
+# 定义支持的模型列表
 models = [
     "antelopev2",
     "buffalo_l",
     "buffalo_m",
     "buffalo_s",
 ]
+# 从环境变量中获取人脸识别模型，默认值为buffalo_l
 recognition_model = os.getenv("RECOGNITION_MODEL", "buffalo_l")
 
+# 获取检测阈值，默认为0.65
 detection_thresh = float(os.getenv("DETECTION_THRESH", "0.65"))
 
-# 设置下载模型URL
+# 设置模型下载URL
 storage.BASE_REPO_URL = 'https://github.com/kqstone/mt-photos-insightface-unofficial/releases/download/models'
 
 # 初始化人脸识别器
 faceAnalysis = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'], allowed_modules=['detection', 'recognition'], name=recognition_model)
+# 准备人脸识别器，设置检测阈值和检测尺寸
 faceAnalysis.prepare(ctx_id=0, det_thresh=detection_thresh, det_size=(640, 640))
 
-
+# 异步函数，用于检查非活跃任务
 async def check_inactive():
     await asyncio.sleep(3600)
     restart_program()
 
-
+# 中间件，用于检查HTTP请求中的活动状态
 @app.middleware("http")
 async def check_activity(request, call_next):
     global inactive_task
@@ -64,31 +71,30 @@ async def check_activity(request, call_next):
     response = await call_next(request)
     return response
 
-
+# 依赖函数，用于验证HTTP头部的API密钥
 async def verify_header(api_key: str = Header(...)):
     # 在这里编写验证逻辑，例如检查 api_key 是否有效
     if api_key != api_auth_key:
         raise HTTPException(status_code=401, detail="Invalid API key")
     return api_key
 
+# 根路径的GET请求处理函数
 @app.get("/")
 async def top_info():
     return {"title": "unofficial face recognition api for mt-photos, get more info: https://github.com/kqstone/mt-photos-insightface-unofficial", "link": "https://mtmt.tech/docs/advanced/facial_api","detector_backend": detector_backend, "recognition_model": recognition_model}
 
-
-
-
+# "/check"路径的POST请求处理函数
 @app.post("/check")
 async def check_req(api_key: str = Depends(verify_header)):
     return {'result': 'pass'}
 
-
+# "/restart"路径的POST请求处理函数，触发程序重启
 @app.post("/restart")
 async def check_req(api_key: str = Depends(verify_header)):
     # 客户端可调用，触发重启进程来释放内存
     restart_program()
 
-
+# "/represent"路径的POST请求处理函数，用于处理图像上传请求
 @app.post("/represent")
 async def process_image(file: UploadFile = File(...), api_key: str = Depends(verify_header)):
     content_type = file.content_type

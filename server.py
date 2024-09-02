@@ -102,8 +102,7 @@ async def process_image(file: UploadFile = File(...), api_key: str = Depends(ver
     image_bytes = await file.read()
     try:
         img = None
-        if content_type == 'image/gif':
-            # Use Pillow to read the first frame of the GIF file
+        if content_type == 'image/webp' or content_type == 'image/gif':# Use Pillow to read the first frame of the GIF file
             with Image.open(BytesIO(image_bytes)) as img:
                 if img.is_animated:
                     img.seek(0)  # Seek to the first frame of the GIF

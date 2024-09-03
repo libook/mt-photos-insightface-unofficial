@@ -24,7 +24,7 @@ def process_image(image_bytes, content_type, face_analysis):
     try:
         if content_type in ['image/webp', 'image/gif']:
             with Image.open(BytesIO(image_bytes)) as img:
-                if img.is_animated:
+                if getattr(img, "is_animated", False):  # Check if the image supports animation
                     img.seek(0)
                 frame = img.convert('RGB')
                 np_arr = np.array(frame)

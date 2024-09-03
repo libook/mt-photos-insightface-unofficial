@@ -57,7 +57,7 @@ def process_image(image_bytes, content_type, face_analysis):
         return {'result': [], 'msg': str(e)}
 
 def process_loop(conn):
-    # 只在子进程中初始化 global_face_analysis
+    # 只在子进程中初始化 face_analysis
     face_analysis = initialize_insightface()
 
     while True:

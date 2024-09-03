@@ -18,8 +18,7 @@ def initialize_insightface():
     face_analysis.prepare(ctx_id=0, det_thresh=detection_thresh, det_size=(640, 640))
     return face_analysis
 
-def process_image(image_bytes, content_type):
-    face_analysis = initialize_insightface()
+def process_image(image_bytes, content_type, face_analysis):
     img = None
 
     try:
@@ -58,6 +57,7 @@ def process_image(image_bytes, content_type):
         return {'result': [], 'msg': str(e)}
 
 def process_loop(conn):
+    # 只在子进程中初始化 global_face_analysis
     face_analysis = initialize_insightface()
 
     while True:
@@ -66,6 +66,5 @@ def process_loop(conn):
             break
 
         image_bytes, content_type = data
-        result = process_image(image_bytes, content_type)
+        result = process_image(image_bytes, content_type, face_analysis)
         conn.send(result)
-

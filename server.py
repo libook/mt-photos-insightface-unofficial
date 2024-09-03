@@ -90,6 +90,11 @@ async def process_image(file: UploadFile = File(...), api_key: str = Depends(ver
         try:
             parent_conn.send((image_bytes, content_type))  # 将图像字节和类型发送给子进程
             data = parent_conn.recv()  # 从子进程接收处理结果
+
+            # Check if 'msg' is in the data and raise an exception if present
+            if 'msg' in data and data['msg']:
+                raise Exception(data['msg'])
+            
             return data
 
         except Exception as e:

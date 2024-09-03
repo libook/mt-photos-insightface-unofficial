@@ -8,7 +8,7 @@ COPY requirements.txt .
 RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install --no-cache-dir -r requirements.txt --index-url=https://pypi.tuna.tsinghua.edu.cn/simple/
 
-COPY server.py .
+COPY ./ ./
 
 ENV API_AUTH_KEY=mt_photos_ai_extra
 ENV RECOGNITION_MODEL=buffalo_l

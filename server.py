@@ -35,7 +35,11 @@ def stop_image_processor():
     global process, parent_conn
     if process is not None:
         process.terminate()
-        process.join()
+        # 等待10秒，如果进程仍未结束，则强制结束
+        process.join(10)
+        if p.is_alive():
+            logging.error("子进程无法停止，强杀")
+            process.kill()
         process = None
         parent_conn = None
         logging.info("子进程已停止")
@@ -101,8 +105,9 @@ async def process_image(file: UploadFile = File(...), api_key: str = Depends(ver
             #return {'result': [], 'msg': str(e)}
             # 输出错误信息
             logging.error(f"An error occurred: {e}")
-            # 停止子进程，期望在下一个循环中重新启动
-            stop_image_processor()
+            with lock:
+                # 停止子进程，期望在下一个循环中重新启动
+                stop_image_processor()
 
 if __name__ == "__main__":
     uvicorn.run("server:app", host="0.0.0.0", port=http_port)

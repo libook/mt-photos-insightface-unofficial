@@ -37,7 +37,7 @@ def stop_image_processor():
         process.terminate()
         # 等待10秒，如果进程仍未结束，则强制结束
         process.join(10)
-        if p.is_alive():
+        if process.is_alive():
             logging.error("子进程无法停止，强杀")
             process.kill()
         process = None

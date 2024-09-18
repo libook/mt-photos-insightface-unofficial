@@ -1,7 +1,9 @@
-# MT Photos非官方人脸识别API
+# MT Photos非官方人脸识别API（Nvidia显卡CUDA版）
 
 - 仅供非商业测试
 - fork自[MT-Photos/mt-photos-deepface](https://github.com/MT-Photos/mt-photos-deepface), 删除了deepface相关，添加基于[deepinsight/insightface](https://github.com/deepinsight/insightface)实现的人脸识别API
+- 基于[xayane的CUDA版](https://github.com/xayane/mt-photos-insightface-unofficial)，进行了高可用性改造，如果跑xayane的版本容易崩溃可以试试此版本。
+- 默认不加载模型，有请求时自动加载模型，模型崩溃自动重启恢复继续处理请求，10分钟无请求自动卸载模型。
 
 ## 模型选择
 
@@ -28,13 +30,13 @@ recognition_model = os.getenv("RECOGNITION_MODEL", "buffalo_l")
 - 下载镜像
 
 ```
-docker pull kqstone/mt-photos-insightface-unofficial:latest
+docker pull libook/mt-photos-insightface-unofficial:latest
 ```
 
 - 创建及运行容器
 
 ```
-docker run -i -p 8066:8066 -e API_AUTH_KEY=mt_photos_ai_extra --name mt-photos-insightface-unofficial --restart="unless-stopped" kqstone/mt-photos-insightface-unofficial:latest
+docker run --gpus all -i -p 8066:8066 -e API_AUTH_KEY=mt_photos_ai_extra --name mt-photos-insightface-unofficial --restart="unless-stopped" libook/mt-photos-insightface-unofficial:latest
 ```
 
 
